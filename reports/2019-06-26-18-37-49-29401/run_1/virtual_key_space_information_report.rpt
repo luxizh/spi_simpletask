@@ -1,0 +1,6 @@
+Vertex: inputspikes:0:8
+    Partition: SPIKE, Routing Info: [KeyAndMask:0x0L:0xfffffff0]
+Vertex: outputspikes:0:2
+    Partition: SPIKE, Routing Info: [KeyAndMask:0x10L:0xfffffffc]
+Vertex: supersignal:0:2
+    Partition: SPIKE, Routing Info: [KeyAndMask:0x14L:0xfffffffc]
