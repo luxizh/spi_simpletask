@@ -4,14 +4,14 @@ import random
 from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 
-trylabel=3
+trylabel=7
 #def parameters
 __delay__ = 0.250 # (ms) 
 tauPlus = 20 #20 # 15 # 16.8 from literature
 tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 2.000 #1 # G: 0.15
+wMax = 2.00 #1 # G: 0.15
 wMaxInit = 0.500#0.1#0.100
 wMin = 0
 nbIter = 5
@@ -24,7 +24,7 @@ input_class=3
 input_size=input_len*input_class
 output_size=3
 inhibWeight = 2
-stimWeight = 100
+stimWeight = 20
 
 v_co=10
 
@@ -136,7 +136,7 @@ def train(label,untrained_weights=None):
     pplt.Panel(spikes, xticks=True, xlabel="Time (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
     title="Training"+str(label),
     #annotations="Simulated with {}".format(sim.name())
-                ).save(str(trylabel)+str(label)+'_training.png')
+                ).save('plot/'+str(trylabel)+str(label)+'_training.png')
                 
     sim.end()
     return weight_list[1]
@@ -190,7 +190,7 @@ def test(spikeTimes, trained_weights,label):
     pplt.Panel(spikes, xlabel="Time (ms)", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
     title='Test with label ' + str(label),
     #annotations="Simulated with {}".format(sim.name())
-                ).save(str(trylabel)+str(label)+'_test.png')
+                ).save('plot/'+str(trylabel)+str(label)+'_test.png')
 
     print("Weights:{}".format(prepost_proj.get('weight', 'list')))
 
@@ -201,7 +201,7 @@ def test(spikeTimes, trained_weights,label):
 
 
 #==============main================
-'''
+
 weight_list=None
 
 for i in range(15):
@@ -212,7 +212,7 @@ for i in range(15):
 
 #import pickle
 np.save("trainedweight"+str(trylabel)+".npy",weight_list)
-'''
+
 
 weight_list=np.load("trainedweight"+str(trylabel)+".npy")
 print("training finish!")
