@@ -2,35 +2,38 @@ import pyNN.spiNNaker as sim
 import numpy as np
 import random
 from pyNN.random import NumpyRNG, RandomDistribution
+import pyNN.utility.plotting as pplt
 
+trylabel=3
 #def parameters
-__delay__ = 1.0 # (ms) 
-tauPlus = 30 #20 # 15 # 16.8 from literature
-tauMinus = 30 #20 # 30 # 33.7 from literature
+__delay__ = 0.250 # (ms) 
+tauPlus = 20 #20 # 15 # 16.8 from literature
+tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 10.000 #1 # G: 0.15
-wMaxInit = 10.000#0.1#0.100
+wMax = 2.000 #1 # G: 0.15
+wMaxInit = 0.500#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
 x = 3 # no supervision for x first traj presentations
 y = 0# for inside testing of traj to see if it has been learned /!\ stdp not disabled
 
-input_len=3
-input_size=input_len*input_len
+input_len=30
+input_class=3
+input_size=input_len*input_class
 output_size=3
-inhibWeight = 10
+inhibWeight = 2
 stimWeight = 100
 
-v_co=3
+v_co=10
 
-cell_params_lif = {'cm': 0.25,
+cell_params_lif = {'cm': 1,#70
                    'i_offset': 0.0,
                    'tau_m': 20.0,
-                   'tau_refrac': 2.0,
+                   'tau_refrac': 12.0,#2 more that t inhibit
                    'tau_syn_E': 5.0,
-                   'tau_syn_I': 5.0,
+                   'tau_syn_I': 8.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
                    'v_thresh': -50.0
@@ -40,7 +43,7 @@ def generate_data(label):
     spikesTrain=[]
     organisedData = {}
     for i in range(input_len):
-        for j in range(input_len):
+        for j in range(input_class):
             neuid=(i,j)
             organisedData[neuid]=[]
     for i in range(input_len):
@@ -82,13 +85,13 @@ def train(label,untrained_weights=None):
                 training_weights[i][j] = untrained_weights[k]
                 k += 1
     else:
-        training_weights = untrained_weights[0]
+        training_weights = untrained_weights
 
     connections = []
     for n_pre in range(input_size): # len(untrained_weights) = input_size
         for n_post in range(output_size): # len(untrained_weight[0]) = output_size; 0 or any n_pre
-            connections.append((n_pre, n_post, training_weights[n_pre][n_post], __delay__)) 
-    runTime = int(max(max(spikeTimes)))+1000
+            connections.append((n_pre, n_post, training_weights[n_pre][n_post], __delay__)) #index
+    runTime = int(max(max(spikeTimes)))+100
     #####################
     sim.setup(timestep=1)
     #def populations
@@ -100,7 +103,7 @@ def train(label,untrained_weights=None):
     stdp = sim.STDPMechanism(
                             weight=0.02,  # this is the initial value of the weight
                             #delay="0.2 + 0.01*d",
-                            timing_dependence=sim.SpikePairRule(tau_plus=20.0, tau_minus=20.0,A_plus=0.01, A_minus=0.012),
+                            timing_dependence=sim.SpikePairRule(tau_plus=tauPlus, tau_minus=tauMinus,A_plus=aPlus, A_minus=aMinus),
                             weight_dependence=sim.MultiplicativeWeightDependence(w_min=wMin, w_max=wMax),
                             #weight_dependence=sim.AdditiveWeightDependence(w_min=0, w_max=0.4),
                             dendritic_delay_fraction=1.0)
@@ -113,22 +116,36 @@ def train(label,untrained_weights=None):
     stim_proj = sim.Projection(supsignal, layer2, sim.OneToOneConnector(), 
                                 synapse_type=sim.StaticSynapse(weight=stimWeight, delay=__delay__))
 
-    #layer2.record(['v', 'spikes'])
-    #supsignal.record(['spikes'])
+    layer2.record(['v', 'spikes'])
+    supsignal.record(['spikes'])
     sim.run(runTime)
 
     print("Weights:{}".format(stdp_proj.get('weight', 'list')))
 
-    weight_list = [stdp_proj.get('weight', 'list'), stdp_proj.get('weight', format='list', with_address=False)] 
-                    
+    weight_list = [stdp_proj.get('weight', 'list'), stdp_proj.get('weight', format='list', with_address=False)]
+    neo = layer2.get_data(["spikes", "v"])
+    spikes = neo.segments[0].spiketrains
+    v = neo.segments[0].filter(name='v')[0]
+    neostim = supsignal.get_data(["spikes"])
+    print(label)
+    spikestim = neostim.segments[0].spiketrains
+
+    pplt.Figure(
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime)),
+    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
+    pplt.Panel(spikes, xticks=True, xlabel="Time (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
+    title="Training"+str(label),
+    #annotations="Simulated with {}".format(sim.name())
+                ).save(str(trylabel)+str(label)+'_training.png')
+                
     sim.end()
-    return weight_list
+    return weight_list[1]
 
 
-def test(spikeTimes, trained_weights):
+def test(spikeTimes, trained_weights,label):
 
     #spikeTimes = extractSpikes(sample)
-    runTime = int(max(max(spikeTimes)))+1000
+    runTime = int(max(max(spikeTimes)))+100
 
     ##########################################
 
@@ -152,6 +169,7 @@ def test(spikeTimes, trained_weights):
     #k = 0
     for n_pre in range(input_size): # len(untrained_weights) = input_size
         for n_post in range(output_size): # len(untrained_weight[0]) = output_size; 0 or any n_pre
+            #connections.append((n_pre, n_post, weigths[n_pre][n_post]*(wMax), __delay__))
             connections.append((n_pre, n_post, weigths[n_pre][n_post]*(wMax)/max(trained_weights), __delay__)) #
             #k += 1
 
@@ -165,25 +183,43 @@ def test(spikeTimes, trained_weights):
     neo = post_pop.get_data(['v', 'spikes'])
     spikes = neo.segments[0].spiketrains
     v = neo.segments[0].filter(name='v')[0]
+    pplt.Figure(
+    # plot voltage 
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0, runTime+100)),
+    # raster plot
+    pplt.Panel(spikes, xlabel="Time (ms)", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
+    title='Test with label ' + str(label),
+    #annotations="Simulated with {}".format(sim.name())
+                ).save(str(trylabel)+str(label)+'_test.png')
 
     print("Weights:{}".format(prepost_proj.get('weight', 'list')))
 
     weight_list = [prepost_proj.get('weight', 'list'), prepost_proj.get('weight', format='list', with_address=False)]
     #predict_label=
     sim.end()
+    return spikes
 
 
 #==============main================
+'''
 weight_list=None
 
-for i in range(10):
+for i in range(15):
     label=random.randint(0,2)
     weight_list=train(label=label,untrained_weights=weight_list)
     #weight_list=weight_list[0]
-    print weight_list
+    #print weight_list
 
+#import pickle
+np.save("trainedweight"+str(trylabel)+".npy",weight_list)
+'''
 
+weight_list=np.load("trainedweight"+str(trylabel)+".npy")
+print("training finish!")
 for i in range(3):
     spikeTimes=generate_data(i)
-    test(spikeTimes,weight_list)
+    print i
+    spikes=test(spikeTimes,weight_list,i)
+    print(i,spikes)
+
 
