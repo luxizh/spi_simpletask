@@ -10,9 +10,9 @@ __delay__ = 0.250 # (ms)
 tauPlus = 20 #20 # 15 # 16.8 from literature
 tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
-aMinus = 0.500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 2.00 #1 # G: 0.15
-wMaxInit = 0.500#0.1#0.100
+aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
+wMax = 1 #1 # G: 0.15
+wMaxInit = 0.100#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -28,7 +28,7 @@ stimWeight = 20
 
 v_co=10
 
-cell_params_lif = {'cm': 1,#70
+cell_params_lif = {#'cm': 0.3,#70
                    'i_offset': 0.0,
                    'tau_m': 20.0,
                    'tau_refrac': 12.0,#2 more that t inhibit
@@ -135,7 +135,7 @@ def train(label,untrained_weights=None):
     pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
     pplt.Panel(spikes, xticks=True, xlabel="Time (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
     title="Training"+str(label),
-    #annotations="Simulated with {}".format(sim.name())
+    annotations="Training"+str(label)
                 ).save('plot/'+str(trylabel)+str(label)+'_training.png')
                 
     sim.end()
@@ -189,7 +189,7 @@ def test(spikeTimes, trained_weights,label):
     # raster plot
     pplt.Panel(spikes, xlabel="Time (ms)", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
     title='Test with label ' + str(label),
-    #annotations="Simulated with {}".format(sim.name())
+    annotations='Test with label ' + str(label)
                 ).save('plot/'+str(trylabel)+str(label)+'_test.png')
 
     print("Weights:{}".format(prepost_proj.get('weight', 'list')))
