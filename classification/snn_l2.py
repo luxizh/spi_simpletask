@@ -4,15 +4,15 @@ import random
 from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 
-trylabel=7
+trylabel=9
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 20 #20 # 15 # 16.8 from literature
-tauMinus = 20 #20 # 30 # 33.7 from literature
+tauPlus = 10 #20 # 15 # 16.8 from literature
+tauMinus = 10 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 1 #1 # G: 0.15
-wMaxInit = 0.100#0.1#0.100
+wMax = 2 #1 # G: 0.15 1
+wMaxInit = 0.500#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -28,12 +28,12 @@ stimWeight = 20
 
 v_co=10
 
-cell_params_lif = {#'cm': 0.3,#70
+cell_params_lif = {'cm': 1,#70
                    'i_offset': 0.0,
-                   'tau_m': 20.0,
-                   'tau_refrac': 12.0,#2 more that t inhibit
-                   'tau_syn_E': 5.0,
-                   'tau_syn_I': 8.0,#5
+                   'tau_m': 5.0,#20
+                   'tau_refrac': 5.0,#2 more that t inhibit#10
+                   'tau_syn_E': 2.0,#2
+                   'tau_syn_I': 4.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
                    'v_thresh': -50.0
@@ -183,15 +183,16 @@ def test(spikeTimes, trained_weights,label):
     neo = post_pop.get_data(['v', 'spikes'])
     spikes = neo.segments[0].spiketrains
     v = neo.segments[0].filter(name='v')[0]
-    pplt.Figure(
+    f1=pplt.Figure(
     # plot voltage 
     pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0, runTime+100)),
     # raster plot
     pplt.Panel(spikes, xlabel="Time (ms)", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
     title='Test with label ' + str(label),
     annotations='Test with label ' + str(label)
-                ).save('plot/'+str(trylabel)+str(label)+'_test.png')
-
+                )
+    f1.save('plot/'+str(trylabel)+str(label)+'_test.png')
+    f1.fig.texts=[]
     print("Weights:{}".format(prepost_proj.get('weight', 'list')))
 
     weight_list = [prepost_proj.get('weight', 'list'), prepost_proj.get('weight', format='list', with_address=False)]
@@ -201,10 +202,10 @@ def test(spikeTimes, trained_weights,label):
 
 
 #==============main================
-
+'''
 weight_list=None
 
-for i in range(15):
+for i in range(10):
     label=random.randint(0,2)
     weight_list=train(label=label,untrained_weights=weight_list)
     #weight_list=weight_list[0]
@@ -212,7 +213,7 @@ for i in range(15):
 
 #import pickle
 np.save("trainedweight"+str(trylabel)+".npy",weight_list)
-
+'''
 
 weight_list=np.load("trainedweight"+str(trylabel)+".npy")
 print("training finish!")
