@@ -7,8 +7,8 @@ import pyNN.utility.plotting as pplt
 trylabel=9
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 10 #20 # 15 # 16.8 from literature
-tauMinus = 10 #20 # 30 # 33.7 from literature
+tauPlus = 20 #20 # 15 # 16.8 from literature
+tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
 wMax = 2 #1 # G: 0.15 1
@@ -74,6 +74,7 @@ def train(label,untrained_weights=None):
         #untrained_weights = RandomDistribution('normal_clipped', mu=0.1, sigma=0.05, low=wMin, high=wMaxInit).next(input_size*output_size)
         untrained_weights = np.around(untrained_weights, 3)
         #saveWeights(untrained_weights, 'untrained_weightssupmodel1traj')
+        print ("init!")
 
     print "length untrained_weights :", len(untrained_weights)
 
@@ -101,7 +102,7 @@ def train(label,untrained_weights=None):
 
     #def learning rule
     stdp = sim.STDPMechanism(
-                            weight=0.02,  # this is the initial value of the weight
+                            #weight=0.02,  # this is the initial value of the weight
                             #delay="0.2 + 0.01*d",
                             timing_dependence=sim.SpikePairRule(tau_plus=tauPlus, tau_minus=tauMinus,A_plus=aPlus, A_minus=aMinus),
                             weight_dependence=sim.MultiplicativeWeightDependence(w_min=wMin, w_max=wMax),
@@ -202,7 +203,7 @@ def test(spikeTimes, trained_weights,label):
 
 
 #==============main================
-'''
+
 weight_list=None
 
 for i in range(10):
@@ -213,7 +214,7 @@ for i in range(10):
 
 #import pickle
 np.save("trainedweight"+str(trylabel)+".npy",weight_list)
-'''
+
 
 weight_list=np.load("trainedweight"+str(trylabel)+".npy")
 print("training finish!")
