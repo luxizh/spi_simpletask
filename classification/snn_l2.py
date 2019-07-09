@@ -3,6 +3,7 @@ import numpy as np
 import random
 from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
+import matplotlib.pyplot as plt
 
 trylabel=9
 #def parameters
@@ -11,8 +12,8 @@ tauPlus = 20 #20 # 15 # 16.8 from literature
 tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 2 #1 # G: 0.15 1
-wMaxInit = 0.500#0.1#0.100
+wMax = 5 #1 # G: 0.15 1
+wMaxInit = 2.00#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -26,38 +27,45 @@ output_size=3
 inhibWeight = 2
 stimWeight = 20
 
-v_co=10
+v_co=5
 
-cell_params_lif = {'cm': 1,#70
+cell_params_lif = {'cm': 0.5,#70
                    'i_offset': 0.0,
-                   'tau_m': 5.0,#20
+                   'tau_m': 20.0,#20
                    'tau_refrac': 5.0,#2 more that t inhibit#10
                    'tau_syn_E': 2.0,#2
-                   'tau_syn_I': 4.0,#5
+                   'tau_syn_I': 5.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
-                   'v_thresh': -50.0
+                   'v_thresh': -55.0
                    }
 
 def generate_data(label):
     spikesTrain=[]
     organisedData = {}
-    for i in range(input_len):
-        for j in range(input_class):
+    for i in range(input_class):
+        for j in range(input_len):
             neuid=(i,j)
             organisedData[neuid]=[]
     for i in range(input_len):
-        neuid=(i,label)
+        neuid=(label,i)
         organisedData[neuid].append(i*v_co)
 #        if neuid not in organisedData:
 #            organisedData[neuid]=[i*v_co]
 #        else:
 #            organisedData[neuid].append(i*v_co)
-    
+    for i in range(input_class):
+        for j in range(input_len):
+            neuid=(i,j)
+            organisedData[neuid].sort()
+            spikesTrain.append(organisedData[neuid])
+    return spikesTrain
+'''    
     for neuronSpikes in organisedData.values():
         neuronSpikes.sort()
         spikesTrain.append(neuronSpikes)
-    return spikesTrain
+'''
+    
 
 def train(label,untrained_weights=None):
     organisedStim = {}
@@ -102,6 +110,7 @@ def train(label,untrained_weights=None):
 
     #def learning rule
     stdp = sim.STDPMechanism(
+                            #weight=untrained_weights,
                             #weight=0.02,  # this is the initial value of the weight
                             #delay="0.2 + 0.01*d",
                             timing_dependence=sim.SpikePairRule(tau_plus=tauPlus, tau_minus=tauMinus,A_plus=aPlus, A_minus=aMinus),
@@ -116,8 +125,10 @@ def train(label,untrained_weights=None):
                                             receptor_type='inhibitory')
     stim_proj = sim.Projection(supsignal, layer2, sim.OneToOneConnector(), 
                                 synapse_type=sim.StaticSynapse(weight=stimWeight, delay=__delay__))
+    
+    layer1.record(['spikes'])
 
-    layer2.record(['v', 'spikes'])
+    layer2.record(['v','spikes'])
     supsignal.record(['spikes'])
     sim.run(runTime)
 
@@ -130,14 +141,27 @@ def train(label,untrained_weights=None):
     neostim = supsignal.get_data(["spikes"])
     print(label)
     spikestim = neostim.segments[0].spiketrains
+    neoinput= layer1.get_data(["spikes"])
+    spikesinput = neoinput.segments[0].spiketrains
 
+    plt.close('all')
     pplt.Figure(
     pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime)),
+    pplt.Panel(spikesinput, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
     pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
     pplt.Panel(spikes, xticks=True, xlabel="Time (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
     title="Training"+str(label),
     annotations="Training"+str(label)
                 ).save('plot/'+str(trylabel)+str(label)+'_training.png')
+    #plt.hist(weight_list[1], bins=100)
+    
+    plt.close('all')
+    plt.hist([weight_list[1][0:input_size], weight_list[1][input_size:input_size*2], weight_list[1][input_size*2:]], bins=20, label=['neuron 0', 'neuron 1', 'neuron 2'], range=(0, wMax))
+    plt.title('weight distribution')
+    plt.xlabel('Weight value')
+    plt.ylabel('Weight count')
+    #plt.show()
+    #plt.show()
                 
     sim.end()
     return weight_list[1]
@@ -205,6 +229,8 @@ def test(spikeTimes, trained_weights,label):
 #==============main================
 
 weight_list=None
+#for i in range(10):
+#    spikeTimes=generate_data(1)
 
 for i in range(10):
     label=random.randint(0,2)
