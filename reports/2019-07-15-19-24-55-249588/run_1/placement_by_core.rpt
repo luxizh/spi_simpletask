@@ -1,0 +1,11 @@
+        Placement Information by Core
+        =============================
+
+Generated: Mon Jul 15 19:24:57 2019 for target machine '192.168.240.253'
+
+**** Chip: (0, 0)
+Application cores: 18
+  Processor 2: Vertex: 'noise', pop size: 90
+              Slice on this core: 0:89 (90 atoms)
+              Model: SpikeSourcePoisson
+

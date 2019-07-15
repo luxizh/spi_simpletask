@@ -5,15 +5,15 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=4
+trylabel=5
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 10 #20 # 15 # 16.8 from literature
-tauMinus = 10 #20 # 30 # 33.7 from literature
+tauPlus = 20 #20 # 15 # 16.8 from literature
+tauMinus = 20 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
 wMax = 5 #1 # G: 0.15 1
-wMaxInit = 1#0.1#0.100
+wMaxInit = 1.00#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -27,7 +27,7 @@ output_size=3
 inhibWeight = -5
 stimWeight = 20
 
-v_co=5
+v_co=3
 
 cell_params_lif = {'cm': 1,#70
                    'i_offset': 0.0,
@@ -68,6 +68,23 @@ def generate_data():
             neuid=(i,j)
             organisedData[neuid].sort()
             spikesTrain.append(organisedData[neuid])
+
+    runTime = int(max(max(spikesTrain)))
+    sim.setup(timestep=1)
+    
+    noise=sim.Population(input_size,sim.SpikeSourcePoisson(),label='noise')
+
+    
+    noise.record(['spikes'])#noise
+    
+    sim.run(runTime)
+    neonoise= noise.get_data(["spikes"])
+    spikesnoise = neonoise.segments[0].spiketrains#noise
+    sim.end()
+    for i in range(input_size):
+        for noisespike in spikesnoise[i]:
+            spikesTrain[i].append(noisespike)
+            spikesTrain[i].sort()
     return spikesTrain
 '''    
     for neuronSpikes in organisedData.values():
@@ -248,38 +265,7 @@ weight_list=None
 weight_list=train(untrained_weights=weight_list)
 #for i in range(10):
 #    spikeTimes=generate_data(1)
-'''
-for i in range(3):
-    #label=random.randint(0,2)
-    label=i
-    weight_list=None
-    weight_list=train(label=label,untrained_weights=weight_list)
-    #weight_list=weight_list[0]
-    #print weight_list
 
-#import pickle
-'''
-#np.save("onesampleweight"+str(trylabel)+".npy",weight_list)
+np.save("noiseweight"+str(trylabel)+".npy",weight_list)
 
-'''
-weight_list=np.load("trainedweight"+str(trylabel)+".npy")
-print("training finish!")
-for i in range(3):
-    spikeTimes=generate_data(i)
-    print i
-    spikes=test(spikeTimes,weight_list,i)
-    print(i,spikes)
-
-#import pickle
-np.save("trainedweight"+str(trylabel)+".npy",weight_list)
-
-
-weight_list=np.load("trainedweight"+str(trylabel)+".npy")
-print("training finish!")
-for i in range(3):
-    spikeTimes=generate_data(i)
-    print i
-    spikes=test(spikeTimes,weight_list,i)
-    print(i,spikes)
-'''
 
