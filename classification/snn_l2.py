@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 trylabel=9
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 20 #20 # 15 # 16.8 from literature
-tauMinus = 20 #20 # 30 # 33.7 from literature
+tauPlus = 12 #20 # 15 # 16.8 from literature
+tauMinus = 12 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
 wMax = 5 #1 # G: 0.15 1
@@ -50,6 +50,9 @@ def generate_data(label):
     for i in range(input_len):
         neuid=(label,i)
         organisedData[neuid].append(i*v_co)
+        organisedData[neuid].append(i*v_co+1)
+        organisedData[neuid].append(i*v_co+2)
+
 #        if neuid not in organisedData:
 #            organisedData[neuid]=[i*v_co]
 #        else:
@@ -74,7 +77,7 @@ def train(label,untrained_weights=None):
 
     for i in range(output_size):
         labelSpikes.append([])
-    labelSpikes[label] = [int(max(max(spikeTimes)))+1]
+    labelSpikes[label] = [int(max(max(spikeTimes)))+1]#,int(max(max(spikeTimes)))+3,int(max(max(spikeTimes)))+5]
     
     
     if untrained_weights == None:
@@ -110,16 +113,18 @@ def train(label,untrained_weights=None):
 
     #def learning rule
     stdp = sim.STDPMechanism(
-                            #weight=untrained_weights,
+                            weight=untrained_weights,
                             #weight=0.02,  # this is the initial value of the weight
                             #delay="0.2 + 0.01*d",
                             timing_dependence=sim.SpikePairRule(tau_plus=tauPlus, tau_minus=tauMinus,A_plus=aPlus, A_minus=aMinus),
-                            weight_dependence=sim.MultiplicativeWeightDependence(w_min=wMin, w_max=wMax),
+                            #weight_dependence=sim.MultiplicativeWeightDependence(w_min=wMin, w_max=wMax),
+                            weight_dependence=sim.AdditiveWeightDependence(w_min=wMin, w_max=wMax),
                             #weight_dependence=sim.AdditiveWeightDependence(w_min=0, w_max=0.4),
                             dendritic_delay_fraction=1.0)
     #def projections
 
-    stdp_proj = sim.Projection(layer1, layer2, sim.FromListConnector(connections), synapse_type=stdp)
+    #stdp_proj = sim.Projection(layer1, layer2, sim.FromListConnector(connections), synapse_type=stdp)
+    stdp_proj = sim.Projection(layer1, layer2, sim.AllToAllConnector(), synapse_type=stdp)
     inhibitory_connections = sim.Projection(layer2, layer2, sim.AllToAllConnector(allow_self_connections=False), 
                                             synapse_type=sim.StaticSynapse(weight=inhibWeight, delay=__delay__), 
                                             receptor_type='inhibitory')
