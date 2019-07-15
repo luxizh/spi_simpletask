@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 trylabel=9
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 12 #20 # 15 # 16.8 from literature
-tauMinus = 12 #20 # 30 # 33.7 from literature
+tauPlus = 10 #20 # 15 # 16.8 from literature
+tauMinus = 10 #20 # 30 # 33.7 from literature
 aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
 aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
 wMax = 5 #1 # G: 0.15 1
-wMaxInit = 2.00#0.1#0.100
+wMaxInit = 1.00#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -24,17 +24,17 @@ input_len=30
 input_class=3
 input_size=input_len*input_class
 output_size=3
-inhibWeight = 2
+inhibWeight = -5
 stimWeight = 20
 
 v_co=5
 
-cell_params_lif = {'cm': 0.5,#70
+cell_params_lif = {'cm': 1,#70
                    'i_offset': 0.0,
                    'tau_m': 20.0,#20
-                   'tau_refrac': 5.0,#2 more that t inhibit#10
+                   'tau_refrac': 10.0,#2 more that t inhibit#10
                    'tau_syn_E': 2.0,#2
-                   'tau_syn_I': 5.0,#5
+                   'tau_syn_I': 10.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
                    'v_thresh': -55.0
@@ -51,7 +51,7 @@ def generate_data(label):
         neuid=(label,i)
         organisedData[neuid].append(i*v_co)
         organisedData[neuid].append(i*v_co+1)
-        organisedData[neuid].append(i*v_co+2)
+        #organisedData[neuid].append(i*v_co+2)
 
 #        if neuid not in organisedData:
 #            organisedData[neuid]=[i*v_co]

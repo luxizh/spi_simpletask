@@ -49,6 +49,8 @@ def generate_data(label):
     for i in range(input_len):
         neuid=(i,label)
         organisedData[neuid].append(i*v_co)
+        organisedData[neuid].append(i*v_co*2)
+        organisedData[neuid].append(i*v_co*3)
 #        if neuid not in organisedData:
 #            organisedData[neuid]=[i*v_co]
 #        else:
@@ -66,7 +68,7 @@ def train(label,untrained_weights=None):
 
     for i in range(output_size):
         labelSpikes.append([])
-    labelSpikes[label] = [int(max(max(spikeTimes)))+1]
+    labelSpikes[label] = [(input_size-1)*v_co+1,(input_size-1)*v_co*2+1,(input_size-1)*v_co*3+1]
     
     
     if untrained_weights == None:

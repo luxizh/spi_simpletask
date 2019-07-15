@@ -1,0 +1,23 @@
+        Placement Information by Vertex
+        ===============================
+
+Generated: Mon Jul 15 16:41:53 2019 for target machine '192.168.240.253'
+
+**** Vertex: 'inputspikes'
+Model: SpikeSourceArray
+Pop size: 1
+Machine Vertices: 
+  Slice 0:0 (1 atoms) 
+
+**** Vertex: 'post'
+Model: IFCurrExpBase
+Pop size: 1
+Machine Vertices: 
+  Slice 0:0 (1 atoms) 
+
+**** Vertex: 'outputspikes'
+Model: SpikeSourceArray
+Pop size: 1
+Machine Vertices: 
+  Slice 0:0 (1 atoms) 
+

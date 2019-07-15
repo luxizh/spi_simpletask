@@ -1,0 +1,5 @@
+Vertex: inputspikes:0:0
+    Partition: SPIKE, Routing Info: [KeyAndMask:0x0L:0xffffffff]
+Vertex: post:0:0
+Vertex: outputspikes:0:0
+    Partition: SPIKE, Routing Info: [KeyAndMask:0x1L:0xffffffff]
