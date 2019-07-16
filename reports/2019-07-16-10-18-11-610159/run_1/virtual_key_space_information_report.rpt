@@ -1,4 +1,0 @@
-Vertex: pre_pop:0:89
-    Partition: SPIKE, Routing Info: [KeyAndMask:0x80L:0xffffff80]
-Vertex: post_pop:0:2
-    Partition: SPIKE, Routing Info: [KeyAndMask:0x0L:0xfffffffc]

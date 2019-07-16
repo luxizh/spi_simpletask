@@ -5,7 +5,7 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=60
+trylabel=63
 #def parameters
 __delay__ = 0.250 # (ms) 
 tauPlus = 25 #20 # 15 # 16.8 from literature
@@ -24,7 +24,7 @@ input_len=30
 input_class=3
 input_size=input_len*input_class
 output_size=3
-inhibWeight = -2.5
+inhibWeight = -1.5
 stimWeight = 20
 
 v_co=1
@@ -37,7 +37,7 @@ cell_params_lif = {'cm': 1,#70
                    'tau_syn_I': 10.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
-                   'v_thresh': -55.0
+                   'v_thresh': -51.0
                    }
 
 def generate_data():
