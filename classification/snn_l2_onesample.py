@@ -5,15 +5,15 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=4
+trylabel=45
 #def parameters
 __delay__ = 0.250 # (ms) 
-tauPlus = 10 #20 # 15 # 16.8 from literature
-tauMinus = 10 #20 # 30 # 33.7 from literature
-aPlus = 0.500  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
-aMinus = 0.2500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
-wMax = 5 #1 # G: 0.15 1
-wMaxInit = 1#0.1#0.100
+tauPlus = 25 #20 # 15 # 16.8 from literature
+tauMinus = 15 #20 # 30 # 33.7 from literature
+aPlus = 0.100  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
+aMinus = 0.0500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
+wMax = 2 #1 # G: 0.15 1
+wMaxInit = 0.4#0.1#0.100
 wMin = 0
 nbIter = 5
 testWeightFactor = 1#0.05177
@@ -24,10 +24,10 @@ input_len=30
 input_class=3
 input_size=input_len*input_class
 output_size=3
-inhibWeight = -5
+inhibWeight = -3
 stimWeight = 20
 
-v_co=5
+v_co=1
 
 cell_params_lif = {'cm': 1,#70
                    'i_offset': 0.0,
@@ -47,8 +47,9 @@ def generate_data():
         for j in range(input_len):
             neuid=(i,j)
             organisedData[neuid]=[]
-    for i in range(input_len):
-        for j in range(output_size):
+    
+    for j in range(output_size):
+        for i in range(input_len):
             neuid=(j,i)
             organisedData[neuid].append(j*input_len*v_co*5+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*1+i*v_co)
@@ -246,6 +247,7 @@ def test(spikeTimes, trained_weights,label):
 
 weight_list=None
 weight_list=train(untrained_weights=weight_list)
+np.save("trainedweight.npy",weight_list)
 #for i in range(10):
 #    spikeTimes=generate_data(1)
 '''

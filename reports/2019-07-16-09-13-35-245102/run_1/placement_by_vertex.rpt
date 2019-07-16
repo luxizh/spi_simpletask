@@ -1,0 +1,23 @@
+        Placement Information by Vertex
+        ===============================
+
+Generated: Tue Jul 16 09:13:36 2019 for target machine '192.168.240.253'
+
+**** Vertex: 'inputspikes'
+Model: SpikeSourceArray
+Pop size: 90
+Machine Vertices: 
+  Slice 0:89 (90 atoms) on core (0, 0, 2) 
+
+**** Vertex: 'outputspikes'
+Model: IFCurrExpBase
+Pop size: 3
+Machine Vertices: 
+  Slice 0:2 (3 atoms) on core (0, 0, 3) 
+
+**** Vertex: 'supersignal'
+Model: SpikeSourceArray
+Pop size: 3
+Machine Vertices: 
+  Slice 0:2 (3 atoms) on core (0, 0, 4) 
+
