@@ -1,0 +1,11 @@
+        Placement Information by Vertex
+        ===============================
+
+Generated: Tue Jul 16 10:29:36 2019 for target machine '192.168.240.253'
+
+**** Vertex: 'noise'
+Model: SpikeSourcePoisson
+Pop size: 90
+Machine Vertices: 
+  Slice 0:89 (90 atoms) 
+

@@ -5,7 +5,7 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=60
+trylabel=70
 #def parameters
 __delay__ = 0.250 # (ms) 
 tauPlus = 25 #20 # 15 # 16.8 from literature
@@ -57,7 +57,7 @@ def generate_data():
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*3+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*4+i*v_co)
             for k in multitest:
-                organisedData[neuid].append(input_len*v_co*(3*5+j)+(k*10+i)*v_co)
+                organisedData[neuid].append(input_len*v_co*(3*5+j)+(k*12+i)*v_co)
             #organisedData[neuid].append(input_len*v_co*(3*5+j)+i*v_co)
 
         #organisedData[neuid].append(i*v_co+2)
@@ -71,6 +71,23 @@ def generate_data():
             neuid=(i,j)
             organisedData[neuid].sort()
             spikesTrain.append(organisedData[neuid])
+    
+    runTime = int(max(max(spikesTrain)))
+    sim.setup(timestep=1)
+    
+    noise=sim.Population(input_size,sim.SpikeSourcePoisson(),label='noise')
+
+    
+    noise.record(['spikes'])#noise
+    
+    sim.run(runTime)
+    neonoise= noise.get_data(["spikes"])
+    spikesnoise = neonoise.segments[0].spiketrains#noise
+    sim.end()
+    for i in range(input_size):
+        for noisespike in spikesnoise[i]:
+            spikesTrain[i].append(noisespike)
+            spikesTrain[i].sort()
     return spikesTrain
 '''    
     for neuronSpikes in organisedData.values():
@@ -262,6 +279,6 @@ for i in range(3):
 
 #import pickle
 '''
-#np.save("onesampleweight"+str(trylabel)+".npy",weight_list)
+np.save("mul_noi_weight.npy",weight_list)
 
 
