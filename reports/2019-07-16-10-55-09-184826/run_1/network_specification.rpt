@@ -1,0 +1,6 @@
+*** Vertices:
+Vertex noise, size: 90, model: SpikeSourcePoisson
+    Constraints:
+        MaxVertexAtomsConstraint(size=500)
+    Outgoing Edge Partitions:
+

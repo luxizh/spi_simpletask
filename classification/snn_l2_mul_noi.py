@@ -5,8 +5,29 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=70
+trylabel=71
 #def parameters
+
+__delay__ = 0.250 # (ms) 
+tauPlus = 25 #20 # 15 # 16.8 from literature
+tauMinus = 15 #20 # 30 # 33.7 from literature
+aPlus = 0.100  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
+aMinus = 0.0500 #255 #tum 0.012 #2.55 #2.55 #05 #0.5 # 0.0255 (=0.03*0.85) from literature 
+wMax = 2 #1 # G: 0.15 1
+wMaxInit = 0.4#0.1#0.100
+wMin = 0
+nbIter = 5
+testWeightFactor = 1#0.05177
+x = 3 # no supervision for x first traj presentations
+y = 0# for inside testing of traj to see if it has been learned /!\ stdp not disabled
+
+input_len=30
+input_class=3
+input_size=input_len*input_class
+output_size=3
+inhibWeight = -1.5
+stimWeight = 20
+'''
 __delay__ = 0.250 # (ms) 
 tauPlus = 25 #20 # 15 # 16.8 from literature
 tauMinus = 15 #20 # 30 # 33.7 from literature
@@ -26,6 +47,7 @@ input_size=input_len*input_class
 output_size=3
 inhibWeight = -2.5
 stimWeight = 20
+'''
 
 v_co=1
 
@@ -37,7 +59,7 @@ cell_params_lif = {'cm': 1,#70
                    'tau_syn_I': 10.0,#5
                    'v_reset': -70.0,
                    'v_rest': -65.0,
-                   'v_thresh': -55.0
+                   'v_thresh': -51.0#55
                    }
 
 def generate_data():
