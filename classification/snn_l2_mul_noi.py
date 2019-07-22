@@ -5,7 +5,7 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=71
+trylabel=73
 #def parameters
 
 __delay__ = 0.250 # (ms) 
@@ -204,12 +204,12 @@ def train(untrained_weights=None):
 
     plt.close('all')
     pplt.Figure(
-    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime)),
-    pplt.Panel(spikesinput, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
-    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime)),
-    pplt.Panel(spikes, xticks=True, xlabel="Time (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
-    title="Training",
-    annotations="Training"
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(a) Membrane Potential of Output Layer'),
+    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Input Layer'),
+    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(c) Spikes of Supervised Layer'),
+    pplt.Panel(spikes, xticks=True, xlabel="(d) Spikes of Output Layer\nTime (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
+    title="Multiple_car Training with noise",
+    annotations="Multiple_car Training with noise"
                 ).save('plot1/'+str(trylabel)+'_training.png')
     #plt.hist(weight_list[1], bins=100)
     
@@ -301,6 +301,6 @@ for i in range(3):
 
 #import pickle
 '''
-np.save("mul_noi_weight.npy",weight_list)
+np.save('class_result/mul_noi_weight'+str(trylabel)+'.npy',weight_list)
 
 
