@@ -58,7 +58,7 @@ class aedatObj(object):
             aedatObj.data_list.append({'filename': self.filename, 'x': self.x, 'y': self.y, 'pol': self.pol, 'ts': self.ts, 'dim': self.dim})
         
         
-    def load_data(self, debug=2):
+    def load_data(self, debug=1):
         """    
         load AER data file and parse these properties of AE events:
         - timestamps (in us), 
@@ -94,7 +94,7 @@ class aedatObj(object):
         k = 0  # line number
         p = 0  # pointer, position on bytes
         statinfo = os.stat('aer/'+datafile)
-        length = statinfo.st_size/1000    
+        length = statinfo.st_size    
         print ("file size", length)
         #######################################
         #print file size?
@@ -129,15 +129,15 @@ class aedatObj(object):
         # read data-part of file
         aerdatafh.seek(p)
         s = aerdatafh.read(aeLen)
-        print type(s)
+        #print type(s)
         p += aeLen
     
         print (xmask, xshift, ymask, yshift, pmask, pshift)  
 
         while p < length:
             addr, ts = struct.unpack(readMode, s)# s char 1 byte
-            print type(addr)
-            print('%#x'%addr)
+            #print type(addr)
+            #print('%#x'%addr)
             x_addr = (addr & xmask) >> xshift
             y_addr = (addr & ymask) >> yshift
             a_pol = (addr & pmask) >> pshift
@@ -181,7 +181,7 @@ class aedatObj(object):
         """
         if mat_filename == None:
             mat_filename = self.filename
-        sio.savemat('aer/aertest/'+mat_filename, {'filename': mat_filename, 'x': self.x, 'y': self.y, 'pol': self.pol, 'ts': self.ts, \
+        sio.savemat('aer/aermat/'+mat_filename, {'filename': mat_filename, 'x': self.x, 'y': self.y, 'pol': self.pol, 'ts': self.ts, \
         'video_t': self.video_t, 'header': self.header, 'dim': self.dim, 'max_events': self.max_events}) # save all attributes?
         # filename[0:3] --> name = 1-1.mat and not 1-1.aedat.mat
         # remember in python index starts at 0 and in [start:end], idx start is included but end is not
@@ -227,7 +227,7 @@ class aedatObj(object):
 
         rtn = aedatObj() 
 
-        rtn.filename = self.filename + str(new_dim[0]) #
+        rtn.filename = self.filename + '_'+str(new_dim[0]) #
         rtn.ts = self.ts
         rtn.pol = self.pol
         rtn.video_t = self.video_t
@@ -329,7 +329,7 @@ class aedatObj(object):
 
         return rtn
 
-AerTest=aedatObj(filename="DVS128_test.aedat")
+AerTest=aedatObj(filename="single3_2.aedat")
 AerTest.save_to_mat()
 After_down=AerTest.downsample()
 After_filter=After_down.filter_noise()
