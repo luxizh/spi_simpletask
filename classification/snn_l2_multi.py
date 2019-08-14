@@ -5,9 +5,9 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=64
+trylabel=66
 #def parameters
-__delay__ = 0.250 # (ms) 
+__delay__ = 0.50 # (ms) 
 tauPlus = 25 #20 # 15 # 16.8 from literature
 tauMinus = 15 #20 # 30 # 33.7 from literature
 aPlus = 0.100  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
@@ -165,13 +165,13 @@ def train(untrained_weights=None):
 
     plt.close('all')
     pplt.Figure(
-    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(a) Membrane Potential of Output Layer'),
-    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Input Layer'),
-    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(c) Spikes of Supervised Layer'),
-    pplt.Panel(spikes, xticks=True, xlabel="(d) Spikes of Output Layer\nTime (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
-    title="Multiple_car Training without noise",
-    annotations="Multiple_car Training without noise"
-                ).save('plot1/'+str(trylabel)+'_training.png')
+    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(a) Spikes of Input Layer'),
+    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Supervised Layer'),
+    pplt.Panel(spikes, xticks=True, xlabel="(c) Spikes of Output Layer\nTime (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(d) Membrane Potential of Output Layer'),
+    title="Multiple_car Training and Test without Noise",
+    annotations="Multiple_car Training and Test without Noise"
+                ).save('spi_simpletask/plot1/'+str(trylabel)+'_training.png')
     #plt.hist(weight_list[1], bins=100)
     
     plt.close('all')

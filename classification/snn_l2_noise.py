@@ -5,9 +5,10 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=53
+trylabel=54
+#trylabel=90
 #def parameters
-__delay__ = 0.250 # (ms) 
+__delay__ = 0.50 # (ms) 
 tauPlus = 25 #20 # 15 # 16.8 from literature
 tauMinus = 15 #20 # 30 # 33.7 from literature
 aPlus = 0.100  #tum 0.016 #9 #3 #0.5 # 0.03 from literature
@@ -171,6 +172,7 @@ def train(untrained_weights=None):
     weight_list = [stdp_proj.get('weight', 'list'), stdp_proj.get('weight', format='list', with_address=False)]
     neo = layer2.get_data(["spikes", "v"])
     spikes = neo.segments[0].spiketrains
+    #spikes = np.ones_like(neo.segments[0].spiketrains)*neo.segments[0].spiketrains.annotations['source_id']
     v = neo.segments[0].filter(name='v')[0]
     neostim = supsignal.get_data(["spikes"])
     spikestim = neostim.segments[0].spiketrains
@@ -179,15 +181,17 @@ def train(untrained_weights=None):
 
     plt.close('all')
     pplt.Figure(
-    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(a) Membrane Potential of Output Layer'),
-    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Input Layer'),
-    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(c) Spikes of Supervised Layer'),
-    pplt.Panel(spikes, xticks=True, xlabel="(d) Spikes of Output Layer\nTime (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
-    title="Single_car Training with noise",
-    annotations="Single_car Training with noise"
-                ).save('plot1/'+str(trylabel)+'_training.png')
+    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(a) Spikes of Input Layer'),
+    pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Supervised Layer'),
+    pplt.Panel(spikes, xticks=True, xlabel="(c) Spikes of Output Layer\nTime (ms)",yticks=True,markersize=2, xlim=(0,runTime)),
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(d) Membrane Potential of Output Layer'),
+    title="Single_car Training and Test with Noise",
+    annotations="Single_car Training and Test with Noise"
+                ).save('spi_simpletask/plot1/'+str(trylabel)+'_training.png')
     #plt.hist(weight_list[1], bins=100)
-    
+    #ytick_labels=range(0,output_size,1)
+    #ymajorLocator=plt.MultipleLocator(1)
+    #yticks=range(0, output_size, 1)
     plt.close('all')
     plt.hist([weight_list[1][0:input_size], weight_list[1][input_size:input_size*2], weight_list[1][input_size*2:]], bins=20, label=['neuron 0', 'neuron 1', 'neuron 2'], range=(0, wMax))
     plt.title('weight distribution')
@@ -266,6 +270,6 @@ weight_list=train(untrained_weights=weight_list)
 #for i in range(10):
 #    spikeTimes=generate_data(1)
 
-np.save("class_result/noiseweight"+str(trylabel)+".npy",weight_list)
+#np.save("class_result/noiseweight"+str(trylabel)+".npy",weight_list)
 
 
