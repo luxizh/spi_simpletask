@@ -167,8 +167,8 @@ def train(untrained_weights=None):
     pplt.Figure(
     pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(a) Spikes of Input Layer'),
     pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Supervised Layer'),
-    pplt.Panel(spikes, xticks=True, xlabel="(c) Spikes of Output Layer\nTime (ms)", yticks=True, markersize=2, xlim=(0,runTime)),
-    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(d) Membrane Potential of Output Layer'),
+    pplt.Panel(spikes, xticks=True, xlabel="(c) Spikes of Output Layer", yticks=True, markersize=2, xlim=(0,runTime)),
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(d) Membrane Potential of Output Layer\nTime (ms)'),
     title="Multiple_car Training and Test without Noise",
     annotations="Multiple_car Training and Test without Noise"
                 ).save('spi_simpletask/plot1/'+str(trylabel)+'_training.png')
