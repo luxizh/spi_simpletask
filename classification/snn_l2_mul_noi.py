@@ -5,7 +5,7 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=74
+trylabel=75
 #def parameters
 
 __delay__ = 0.250 # (ms) 
@@ -73,14 +73,23 @@ def generate_data():
         multitest=random.sample(range(20),5)
         for i in range(input_len):
             neuid=(j,i)
+            '''
             organisedData[neuid].append(j*input_len*v_co*5+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*1+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*2+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*3+i*v_co)
             organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*4+i*v_co)
-            for k in multitest:
-                organisedData[neuid].append(input_len*v_co*(3*5+j)+(k*12+i)*v_co)
+            organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*4+i*v_co)
+            '''
+            #for k in multitest:
+            #    organisedData[neuid].append(input_len*v_co*(3*5+j)+(k*12+i)*v_co)
             #organisedData[neuid].append(input_len*v_co*(3*5+j)+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+input_len*v_co*1+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+input_len*v_co*2+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+input_len*v_co*3+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+input_len*v_co*4+i*v_co)
+            organisedData[neuid].append(j*input_len*v_co*6+input_len*v_co*5+i*v_co)
 
         #organisedData[neuid].append(i*v_co+2)
 
@@ -125,9 +134,17 @@ def train(untrained_weights=None):
 
     for i in range(output_size):
         labelSpikes.append([])
+        '''
         labelSpikes[i] = [i*input_len*v_co*5+(input_len-1)*v_co+1,
                             i*input_len*v_co*5+(input_len-1)*v_co*2+1,
                             i*input_len*v_co*5+(input_len-1)*v_co*3+1]
+        '''
+        labelSpikes[i] = [i*input_len*v_co*6+(input_len-1)*v_co+1,
+                            i*input_len*v_co*6+(input_len-1)*v_co*2+1,
+                            i*input_len*v_co*6+(input_len-1)*v_co*3+1,
+                            #i*input_len*v_co*6+(input_len-1)*v_co*4+1,
+                            i*input_len*v_co*6+(input_len-1)*v_co*5+1,
+                            i*input_len*v_co*6+(input_len-1)*v_co*6+1]
         #for j in range(5):
         #    labelSpikes
         
@@ -208,7 +225,7 @@ def train(untrained_weights=None):
     pplt.Panel(spikestim, xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(b) Spikes of Supervised Layer'),
     pplt.Panel(spikes, xticks=True, xlabel="(c) Spikes of Output Layer", yticks=True, markersize=2, xlim=(0,runTime)),
     pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0,runTime),xlabel='(d) Membrane Potential of Output Layer\nTime (ms)'),
-    title="Multiple_car Training and Test with Noise",
+    title="Multiple_car Training with Noise and missing supervised signal",
     annotations="Multiple_car Training and Test with Noise"
                 ).save('spi_simpletask/plot1/'+str(trylabel)+'_training.png')
     #plt.hist(weight_list[1], bins=100)

@@ -5,7 +5,7 @@ from pyNN.random import NumpyRNG, RandomDistribution
 import pyNN.utility.plotting as pplt
 import matplotlib.pyplot as plt
 
-trylabel=54
+trylabel=95
 #trylabel=90
 #def parameters
 __delay__ = 0.50 # (ms) 
@@ -92,6 +92,56 @@ def generate_data():
         neuronSpikes.sort()
         spikesTrain.append(neuronSpikes)
 '''
+
+def generate_data_test():
+    spikesTrain=[]
+    organisedData = {}
+    for i in range(input_class):
+        for j in range(input_len):
+            neuid=(i,j)
+            organisedData[neuid]=[]
+    for j in range(output_size):
+        multitest=random.sample(range(200),50)
+        for i in range(input_len):
+            neuid=(j,i)
+            #organisedData[neuid].append(j*input_len*v_co*5+i*v_co)
+            #organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*1+i*v_co)
+            #organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*2+i*v_co)
+            #organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*3+i*v_co)
+            #organisedData[neuid].append(j*input_len*v_co*5+input_len*v_co*4+i*v_co)
+            for k in multitest:
+                organisedData[neuid].append(50+(k*10+i)*v_co)
+            #organisedData[neuid].append(input_len*v_co*(3*5+j)+i*v_co)
+
+        #organisedData[neuid].append(i*v_co+2)
+
+#        if neuid not in organisedData:
+#            organisedData[neuid]=[i*v_co]
+#        else:
+#            organisedData[neuid].append(i*v_co)
+    for i in range(input_class):
+        for j in range(input_len):
+            neuid=(i,j)
+            organisedData[neuid].sort()
+            spikesTrain.append(organisedData[neuid])
+
+    runTime = int(max(max(spikesTrain)))
+    sim.setup(timestep=1)
+    
+    noise=sim.Population(input_size,sim.SpikeSourcePoisson(),label='noise')
+
+    
+    noise.record(['spikes'])#noise
+    
+    sim.run(runTime)
+    neonoise= noise.get_data(["spikes"])
+    spikesnoise = neonoise.segments[0].spiketrains#noise
+    sim.end()
+    for i in range(input_size):
+        for noisespike in spikesnoise[i]:
+            spikesTrain[i].append(noisespike)
+            spikesTrain[i].sort()
+    return spikesTrain
     
 
 def train(untrained_weights=None):
@@ -204,7 +254,7 @@ def train(untrained_weights=None):
     return weight_list[1]
 
 
-def test(spikeTimes, trained_weights,label):
+def test(spikeTimes, trained_weights):
 
     #spikeTimes = extractSpikes(sample)
     runTime = int(max(max(spikeTimes)))+100
@@ -229,6 +279,7 @@ def test(spikeTimes, trained_weights,label):
     connections = []
     
     #k = 0
+    #wMax=1.8
     for n_pre in range(input_size): # len(untrained_weights) = input_size
         for n_post in range(output_size): # len(untrained_weight[0]) = output_size; 0 or any n_pre
             #connections.append((n_pre, n_post, weigths[n_pre][n_post]*(wMax), __delay__))
@@ -236,32 +287,35 @@ def test(spikeTimes, trained_weights,label):
             #k += 1
 
     prepost_proj = sim.Projection(pre_pop, post_pop, sim.FromListConnector(connections), synapse_type=sim.StaticSynapse(), receptor_type='excitatory') # no more learning !!
-    #inhib_proj = sim.Projection(post_pop, post_pop, sim.AllToAllConnector(), synapse_type=sim.StaticSynapse(weight=inhibWeight, delay=__delay__), receptor_type='inhibitory')
+    inhib_proj = sim.Projection(post_pop, post_pop, sim.AllToAllConnector(), synapse_type=sim.StaticSynapse(weight=inhibWeight, delay=__delay__), receptor_type='inhibitory')
     # no more lateral inhib
 
     post_pop.record(['v', 'spikes'])
+    pre_pop.record(['spikes'])
     sim.run(runTime)
 
     neo = post_pop.get_data(['v', 'spikes'])
     spikes = neo.segments[0].spiketrains
     v = neo.segments[0].filter(name='v')[0]
-    f1=pplt.Figure(
+    neoinput= pre_pop.get_data(["spikes"])
+    spikesinput = neoinput.segments[0].spiketrains
+
+    plt.close('all')
+    pplt.Figure(
     # plot voltage 
-    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0, runTime+100)),
+    
     # raster plot
-    pplt.Panel(spikes, xlabel="Time (ms)", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
-    title='Test with label ' + str(label),
-    annotations='Test with label ' + str(label)
-                )
-    f1.save('plot1/'+str(trylabel)+str(label)+'_test.png')
-    f1.fig.texts=[]
+    pplt.Panel(spikesinput,xticks=True, yticks=True, markersize=2, xlim=(0,runTime),xlabel='(a) Spikes of Input Layer'),
+    pplt.Panel(spikes, xlabel="(b) Spikes of Output Layer", xticks=True, yticks=True, markersize=2, xlim=(0, runTime+100)),
+    pplt.Panel(v, ylabel="Membrane potential (mV)", xticks=True, yticks=True, xlim=(0, runTime+100),xlabel='(c) Membrane Potential of Output Layer\nTime (ms)'),
+    title='Multiple Car Test' 
+                ).save('spi_simpletask/plot1/'+str(trylabel)+'_test1.png')
     print("Weights:{}".format(prepost_proj.get('weight', 'list')))
 
     weight_list = [prepost_proj.get('weight', 'list'), prepost_proj.get('weight', format='list', with_address=False)]
     #predict_label=
     sim.end()
     return spikes
-
 
 #==============main================
 
@@ -270,6 +324,17 @@ weight_list=train(untrained_weights=weight_list)
 #for i in range(10):
 #    spikeTimes=generate_data(1)
 
-#np.save("class_result/noiseweight"+str(trylabel)+".npy",weight_list)
+np.save("spi_simpletask/noiseweight"+str(trylabel)+".npy",weight_list)
+
+weight_list=np.load("spi_simpletask/noiseweight"+str(trylabel)+".npy")
+print("training finish!")
+spikeTimes=generate_data_test()
+spikes=test(spikeTimes,weight_list)
+
+count=[]
+for neu in spikes:
+    pass
+    count.append(neu.shape[0])
+print count
 
 

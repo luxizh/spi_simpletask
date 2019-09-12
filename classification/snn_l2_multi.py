@@ -262,6 +262,6 @@ for i in range(3):
 
 #import pickle
 '''
-#np.save("onesampleweight"+str(trylabel)+".npy",weight_list)
+np.save("onesampleweight"+str(trylabel)+".npy",weight_list)
 
 
